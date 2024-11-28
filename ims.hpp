@@ -11,6 +11,7 @@
 #define DISPENSER_CAPACITY 1000           // Kapacita davkovaca na jednu davku
 #define DISPENSER_PERFORMANCE 10          // Cas potrebny na vydavkovanie (minuty)
 #define EXTRUDER_PERFORMANCE 300          // Vykon extrudera za hodinu
+#define MATRIX_PERFORMANCE 300            // Vykon matrice za hodinu
 #define COOLING_PERFORMANCE 300           // Vykon chladenia za hodinu
 #define LAMINATION_PERFORMANCE 280        // Vykon laminacie za hodinu
 #define CUTTING_PERFORMANCE 250           // Vykon rezania za hodinu
