@@ -9,13 +9,14 @@
 #define RAW_MATERIAL_STOCK_CAPACITY 50000 // Kapacita skladu surovin
 #define MIXER_CAPACITY 500                // Kapacita miesacky na jednu davku
 #define DISPENSER_CAPACITY 1000           // Kapacita davkovaca na jednu davku
-#define DISPENSER_PERFORMANCE 10          // Cas potrebny na vydavkovanie (minuty)
-#define EXTRUDER_PERFORMANCE 300          
-#define COOLING_PERFORMANCE 300           
-#define LAMINATION_PERFORMANCE 280        
-#define CUTTING_PERFORMANCE 250           
-#define PACKING_PERFORMANCE 200           
-#define RECYCLE_CAPACITY 100              
+#define DISPENSER_PERFORMANCE 25
+#define MIXER_PERFORMANCE 30 // Cas potrebny na vydavkovanie (minuty)
+#define EXTRUDER_PERFORMANCE 35
+#define COOLING_PERFORMANCE 20
+#define LAMINATION_PERFORMANCE 35
+#define CUTTING_PERFORMANCE 13
+#define PACKING_PERFORMANCE 200
+#define RECYCLE_CAPACITY 100
 
 // Pocet zariadeni
 #define NUMBER_OF_MIXERS 2
@@ -64,57 +65,68 @@ Stat Recycling_time("Cas straveny recyklaciou");
 bool WorkShiftActive = true;
 
 // Procesy
-class Production : public Process {
+class Production : public Process
+{
 public:
     void Behavior() override;
 };
 
-class Dispensing : public Process {
+class Dispensing : public Process
+{
 public:
     void Behavior() override;
 };
 
-class Mixing : public Process {
+class Mixing : public Process
+{
 public:
     void Behavior() override;
 };
 
-class Extrusion : public Process {
+class Extrusion : public Process
+{
 public:
     void Behavior() override;
 };
 
-class Cooling : public Process {
+class Cooling : public Process
+{
 public:
     void Behavior() override;
 };
 
-class Lamination : public Process {
+class Lamination : public Process
+{
 public:
     void Behavior() override;
 };
 
-class Cutting : public Process {
+class Cutting : public Process
+{
 public:
     void Behavior() override;
 };
 
-class Packing : public Process {
+class Packing : public Process
+{
 public:
     void Behavior() override;
 };
 
-class Recycling : public Process {
+class Recycling : public Process
+{
 public:
     void Behavior() override;
 };
 
-class WorkShift : public Process {
+class WorkShift : public Process
+{
 public:
     void Behavior() override;
 };
 
-class StartProduction : public Event {
+class StartProduction : public Event
+{
 public:
     void Behavior() override;
 };
