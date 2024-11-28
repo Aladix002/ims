@@ -1,8 +1,9 @@
 #include <simlib.h>
 #include "ims.hpp"
 
-// Štatistika pre odpadový materiál
+// Štatistiky
 unsigned long Total_waste_material = 0;
+unsigned long Total_packed_products = 0;
 
 // Simulácia dávkovania
 void Dispensing::Behavior() {
@@ -32,9 +33,9 @@ void Extrusion::Behavior() {
     Extrusion_time(Time);
     Release(extruder);
 
-    // Simulujeme vznik odpadu počas extrúzie
+    // Simulácia vzniku odpadu
     if (Random() < 0.05) { // 5 % pravdepodobnosť vzniku odpadu
-        Total_waste_material++;
+        Total_waste_material += DISPENSER_CAPACITY * 0.005;
     }
 
     // Aktivácia ďalšieho procesu
@@ -57,9 +58,9 @@ void Lamination::Behavior() {
     Lamination_time(Time);
     Release(laminator);
 
-    // Simulujeme vznik odpadu počas laminácie
+    // Simulácia vzniku odpadu
     if (Random() < 0.03) { // 3 % pravdepodobnosť vzniku odpadu
-        Total_waste_material++;
+        Total_waste_material += DISPENSER_CAPACITY * 0.003;
     }
 
     // Aktivácia ďalšieho procesu
@@ -72,9 +73,9 @@ void Cutting::Behavior() {
     Cutting_time(Time);
     Release(cutter);
 
-    // Simulujeme vznik odpadu počas rezania
+    // Simulácia vzniku odpadu
     if (Random() < 0.02) { // 2 % pravdepodobnosť vzniku odpadu
-        Total_waste_material++;
+        Total_waste_material += DISPENSER_CAPACITY * 0.002;
     }
 
     // Aktivácia ďalšieho procesu
@@ -87,36 +88,27 @@ void Packing::Behavior() {
     Packing_time(Time);
     Release(packer);
 
-    Total_packed_products++;
+    Total_packed_products += PACKING_PERFORMANCE; // Zvýšenie počtu zabalených produktov
+
+    // Spusti ďalší proces ak je pracovná zmena aktívna
+    if (WorkShiftActive) {
+        (new Dispensing)->Activate();
+    }
 }
 
 void Production::Behavior() {
+    // Počas pracovnej zmeny neustále opakuje procesy
     while (WorkShiftActive) {
         (new Dispensing)->Activate();
-        Passivate();
-        (new Mixing)->Activate();
-        Passivate();
-        (new Extrusion)->Activate();
-        Passivate();
-        (new Cooling)->Activate();
-        Passivate();
-        (new Lamination)->Activate();
-        Passivate();
-        (new Cutting)->Activate();
-        Passivate();
-        (new Packing)->Activate();
-        Passivate();
+        Passivate(); // Čaká na ukončenie aktuálneho cyklu
     }
 }
 
 void WorkShift::Behavior() {
-    WorkShiftActive = true; // Začiatok pracovnej zmeny
-    Wait(WORK_SHIFT);       // Pracovná doba (12 hodín)
+    WorkShiftActive = true;  // Začiatok pracovnej zmeny
+    Wait(WORK_SHIFT);        // 12-hodinová pracovná zmena
     WorkShiftActive = false; // Koniec pracovnej zmeny
-    Wait(DAY - WORK_SHIFT);  // Čas mimo pracovnej zmeny
-    (new WorkShift)->Activate(); // Spusti ďalšiu pracovnú zmenu
 }
-
 
 int main() {
     Init(0, DAY * 5); // Simulácia na 5 dní
@@ -137,10 +129,11 @@ int main() {
     Cutting_time.Output();
     Packing_time.Output();
     printf("\nCelkový počet zabalených produktov: %lu\n", Total_packed_products);
-    printf("Celkové množstvo odpadu: %lu\n", Total_waste_material);
+    printf("Celkové množstvo odpadu: %lu kg\n", Total_waste_material);
 
     return 0;
 }
+
 
 
 

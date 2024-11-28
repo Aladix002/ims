@@ -10,12 +10,12 @@
 #define MIXER_CAPACITY 500                // Kapacita miesacky na jednu davku
 #define DISPENSER_CAPACITY 1000           // Kapacita davkovaca na jednu davku
 #define DISPENSER_PERFORMANCE 10          // Cas potrebny na vydavkovanie (minuty)
-#define EXTRUDER_PERFORMANCE 300          // Vykon extrudera za hodinu
-#define COOLING_PERFORMANCE 300           // Vykon chladenia za hodinu
-#define LAMINATION_PERFORMANCE 280        // Vykon laminacie za hodinu
-#define CUTTING_PERFORMANCE 250           // Vykon rezania za hodinu
-#define PACKING_PERFORMANCE 200           // Vykon balenia za hodinu
-#define RECYCLE_CAPACITY 100              // Kapacita recyklacie za hodinu
+#define EXTRUDER_PERFORMANCE 300          
+#define COOLING_PERFORMANCE 300           
+#define LAMINATION_PERFORMANCE 280        
+#define CUTTING_PERFORMANCE 250           
+#define PACKING_PERFORMANCE 200           
+#define RECYCLE_CAPACITY 100              
 
 // Pocet zariadeni
 #define NUMBER_OF_MIXERS 2
@@ -59,9 +59,6 @@ Stat Lamination_time("Cas straveny laminaciou");
 Stat Cutting_time("Cas straveny rezanim");
 Stat Packing_time("Cas straveny balenim");
 Stat Recycling_time("Cas straveny recyklaciou");
-
-unsigned long Total_packed_products = 0;
-unsigned long Total_recycled_material = 0;
 
 // Stavy
 bool WorkShiftActive = true;
