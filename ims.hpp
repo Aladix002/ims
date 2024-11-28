@@ -41,7 +41,7 @@ Store finished_products("Sklad hotovych vyrobkov", 2000); // Maximalny pocet bal
 Store faulty_products("Sklad vadnych vyrobkov", 500);     // Maximalna kapacita vadnych vyrobkov
 
 // Fronty
-Queue raw_material_q("Cakanie na suroviny");
+Queue dispensing_q("Cakanie na suroviny");
 Queue mixing_q("Cakanie na miesacku");
 Queue extruding_q("Cakanie na extruder");
 Queue cooling_q("Cakanie na chladenie");
@@ -59,6 +59,7 @@ Stat Lamination_time("Cas straveny laminaciou");
 Stat Cutting_time("Cas straveny rezanim");
 Stat Packing_time("Cas straveny balenim");
 Stat Recycling_time("Cas straveny recyklaciou");
+
 unsigned long Total_packed_products = 0;
 unsigned long Total_recycled_material = 0;
 
@@ -66,53 +67,57 @@ unsigned long Total_recycled_material = 0;
 bool WorkShiftActive = true;
 
 // Procesy
+class Production : public Process {
+public:
+    void Behavior() override;
+};
+
 class Dispensing : public Process {
-    void Behavior() override {
-    }
+public:
+    void Behavior() override;
 };
 
 class Mixing : public Process {
-    void Behavior() override {
-    }
+public:
+    void Behavior() override;
 };
 
 class Extrusion : public Process {
-    void Behavior() override {
-    }
+public:
+    void Behavior() override;
 };
 
 class Cooling : public Process {
-    void Behavior() override {
-    }
+public:
+    void Behavior() override;
 };
 
 class Lamination : public Process {
-    void Behavior() override {
-    }
+public:
+    void Behavior() override;
 };
 
 class Cutting : public Process {
-    void Behavior() override {
-    }
+public:
+    void Behavior() override;
 };
 
 class Packing : public Process {
-    void Behavior() override {
-    }
+public:
+    void Behavior() override;
 };
 
 class Recycling : public Process {
-    void Behavior() override {
-    }
+public:
+    void Behavior() override;
 };
 
-class WorkShift : public Event {
-    void Behavior() override {
-    }
+class WorkShift : public Process {
+public:
+    void Behavior() override;
 };
 
 class StartProduction : public Event {
-    void Behavior() override {
-    }
+public:
+    void Behavior() override;
 };
-
