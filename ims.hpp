@@ -11,7 +11,6 @@
 #define DISPENSER_CAPACITY 1000           // Kapacita davkovaca na jednu davku
 #define DISPENSER_PERFORMANCE 10          // Cas potrebny na vydavkovanie (minuty)
 #define EXTRUDER_PERFORMANCE 300          // Vykon extrudera za hodinu
-#define MATRIX_PERFORMANCE 300            // Vykon matrice za hodinu
 #define COOLING_PERFORMANCE 300           // Vykon chladenia za hodinu
 #define LAMINATION_PERFORMANCE 280        // Vykon laminacie za hodinu
 #define CUTTING_PERFORMANCE 250           // Vykon rezania za hodinu
@@ -22,7 +21,6 @@
 #define NUMBER_OF_MIXERS 2
 #define NUMBER_OF_DISPENSERS 1
 #define NUMBER_OF_EXTRUDERS 1
-#define NUMBER_OF_MATRICES 1
 #define NUMBER_OF_LAMINATORS 1
 #define NUMBER_OF_CUTTERS 1
 #define NUMBER_OF_PACKERS 1
@@ -31,7 +29,6 @@
 Facility dispenser("Davkovac");
 Facility mixer[NUMBER_OF_MIXERS];
 Facility extruder("Extruder");
-Facility matrix("Matrix");
 Facility cooler("Chladic");
 Facility laminator("Laminator");
 Facility cutter("Rezaci stroj");
@@ -47,7 +44,6 @@ Store faulty_products("Sklad vadnych vyrobkov", 500);     // Maximalna kapacita 
 Queue raw_material_q("Cakanie na suroviny");
 Queue mixing_q("Cakanie na miesacku");
 Queue extruding_q("Cakanie na extruder");
-Queue matrix_q("Cakanie na matricu");
 Queue cooling_q("Cakanie na chladenie");
 Queue laminating_q("Cakanie na laminator");
 Queue cutting_q("Cakanie na rezanie");
@@ -58,7 +54,6 @@ Queue recycling_q("Cakanie na recyklaciu");
 Stat Dispensing_time("Cas straveny v davkovaci");
 Stat Mixing_time("Cas straveny v miesacke");
 Stat Extrusion_time("Cas straveny v extruderi");
-Stat Matrix_time("Cas straveny v matrici");
 Stat Cooling_time("Cas straveny chladenim");
 Stat Lamination_time("Cas straveny laminaciou");
 Stat Cutting_time("Cas straveny rezanim");
@@ -82,11 +77,6 @@ class Mixing : public Process {
 };
 
 class Extrusion : public Process {
-    void Behavior() override {
-    }
-};
-
-class Matrix : public Process {
     void Behavior() override {
     }
 };
