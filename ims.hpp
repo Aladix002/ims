@@ -6,25 +6,25 @@
 #define WORK_SHIFT 720 // Pracovna doba 12 hodin
 
 // Kapacity a vykony v kg
-#define RAW_MATERIAL_STOCK_CAPACITY 50000 // Kapacita skladu surovin
-#define DISPENSER_CAPACITY 1000
+#define RAW_MATERIAL_STOCK_CAPACITY 100000 // Kapacita skladu surovin
+#define DISPENSER_CAPACITY 450
 #define MIXER_CAPACITY 500 // Kapacita miesacky na jednu davku
-#define EXTRUDER_CAPACITY 100
+#define EXTRUDER_CAPACITY 300
 
-#define COOLER_CAPACITY 115
-#define LAMINATOR_CAPACITY 80
-#define CUTTER_CAPACITY 75
-#define PACKER_CAPACITY 60
+#define COOLER_CAPACITY 450
+#define LAMINATOR_CAPACITY 220
+#define CUTTER_CAPACITY 180
+#define PACKER_CAPACITY 100
 
 // Kapacita davkovaca na jednu davku
 #define DISPENSER_PERFORMANCE 30
-#define MIXER_PERFORMANCE 25 // Cas potrebny na vydavkovanie (minuty)
-#define EXTRUDER_PERFORMANCE 35
+#define MIXER_PERFORMANCE 20 // Cas potrebny na vydavkovanie (minuty)
+#define EXTRUDER_PERFORMANCE 20
 #define COOLING_PERFORMANCE 20
-#define LAMINATION_PERFORMANCE 35
-#define CUTTING_PERFORMANCE 13
-#define PACKING_PERFORMANCE 200
-#define RECYCLE_CAPACITY 100
+#define LAMINATION_PERFORMANCE 20
+#define CUTTING_PERFORMANCE 20
+#define PACKING_PERFORMANCE 20
+#define RECYCLE_CAPACITY 20
 
 // Pocet zariadeni
 #define NUMBER_OF_MIXERS 2

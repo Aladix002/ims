@@ -12,7 +12,7 @@ int Waiting_material_in_packer = 0.0;
 int Recycled_material = 0.0;             // Materiál vrácený do recyklace
 unsigned long Total_waste_material = 0;  // Celkové množství odpadu (kg)
 unsigned long Total_packed_products = 0; // Celkový počet zabalených produktů
-
+unsigned long Total_recycled_materials = 0;
 // === Systémové proměnné ===
 // bool WorkShiftActive = false;
 
@@ -21,39 +21,44 @@ unsigned long Total_packed_products = 0; // Celkový počet zabalených produkt�
 // === Procesy ===
 void ActivateQueue(Queue &q)
 {
-    if (q.Empty())
+    if (!q.Empty())
     {
-        return;
+        q.GetFirst()->Activate();
     }
-    q.GetFirst()->Activate();
 }
 
 void Dispensing::Behavior()
 {
-
-    Seize(dispenser);
-    Wait(DISPENSER_PERFORMANCE);
-    Dispensing_time(Time);
-    Release(dispenser);
+    if (dispenser.Busy())
+    {
+        dispensing_q.Insert(this);
+        this->Passivate();
+    }
 
     if (Warehouse_material >= DISPENSER_CAPACITY)
     {
         Warehouse_material -= DISPENSER_CAPACITY;
         Waiting_material_in_mixer += DISPENSER_CAPACITY;
+        Seize(dispenser);
+        Wait(DISPENSER_PERFORMANCE);
+        Dispensing_time(Time);
+        Release(dispenser);
+        ActivateQueue(dispensing_q);
+        (new Dispensing)->Activate();
+        (new Mixing)->Activate();
     }
     else
     {
-
+        printf("uz nie je material-------------------------------------\n");
         Passivate();
     }
-    (new Dispensing)->Activate();
-    (new Mixing)->Activate();
+
     //("Aktivujem proces dispensing\n");
 }
 void Mixing::Behavior()
 {
 
-    if (Waiting_material_in_mixer < MIXER_CAPACITY)
+    if (Waiting_material_in_mixer <= MIXER_CAPACITY)
     {
         printf("malo materialu %d\n", Waiting_material_in_mixer);
         // maybe sa tu ma dat tiez do fronty nie som si ista
@@ -72,14 +77,14 @@ void Mixing::Behavior()
             break;
         }
     }
-    printf("material cakajuci pred miesackou %d\n", Waiting_material_in_mixer);
+    // printf("material cakajuci pred miesackou %d\n", Waiting_material_in_mixer);
 
     // Ak sme našli voľnú miešačku
     if (mixer_found)
     {
         Seize(mixer[selected_mixer]);
         Waiting_material_in_mixer -= MIXER_CAPACITY;
-        printf("zobral material ostalo %d\n", Waiting_material_in_mixer);
+        // printf("zobral material ostalo %d\n", Waiting_material_in_mixer);
 
         Wait(MIXER_PERFORMANCE);
         Mixing_time(Time);
@@ -95,7 +100,7 @@ void Mixing::Behavior()
     else
     {
         mixing_q.Insert(this);
-        printf("plny mixer %d\n", Waiting_material_in_mixer);
+        printf("plny mixer %d kg\n", Waiting_material_in_mixer);
         this->Passivate();
     }
     //("Aktivujem proces mixing\n");
@@ -105,37 +110,45 @@ void Extrusion::Behavior()
 {
     if (extruder.Busy())
     {
+        printf("plny extruder %d kg\n", Waiting_material_in_extruder);
+
         extruding_q.Insert(this);
         this->Passivate();
     }
 
-    if (Waiting_material_in_extruder >= 50) // tu by mal byt extruder capacity asi
-    {
+    if (Waiting_material_in_extruder >= EXTRUDER_CAPACITY)
+    { // Kapacita extrúdera
         Seize(extruder);
-        Waiting_material_in_extruder -= 50; // tu by mal byt extruder capacity asi
+        Waiting_material_in_extruder -= EXTRUDER_CAPACITY;
         Wait(EXTRUDER_PERFORMANCE);
         Extrusion_time(Time);
         Release(extruder);
 
-        if (Random() < 0.05)
+        // Rozhodovací bod pre nesprávnu viskozitu
+        if (Random() < 0.10) // 10 percentna sanca ze ma zlu viskozitu
         {
-            Recycled_material += 50 * 0.05;
+            Recycled_material += EXTRUDER_CAPACITY * 0.07; // 7 % materialu ma zlu viskozitu idk alebo cele neviem
+            Waiting_material_in_cooler += EXTRUDER_CAPACITY - Recycled_material;
+
+            (new Recycling)->Activate();
+            // printf("*********************dalo sa do recycling************\n");
         }
         else
         {
-            Waiting_material_in_cooler += 50; // tu ma byt asi tiez extruder capacity
-        }
-        ActivateQueue(extruding_q);
-        (new Recycling)->Activate();
+            // printf("nedalo sa do recycling\n");
 
+            Waiting_material_in_cooler += 50;
+        }
+
+        // Aktivácia ďalších procesov
+        ActivateQueue(extruding_q);
         (new Cooling)->Activate();
-        (new Extrusion)->Activate(); // aby sa znova spojazdnil extruder
+        (new Extrusion)->Activate();
     }
     else
     {
         Passivate();
     }
-    //("Aktivujem proces extrusion\n");
 }
 
 void Cooling::Behavior()
@@ -143,19 +156,21 @@ void Cooling::Behavior()
 
     if (cooler.Busy())
     {
+        printf("plny cooler %d kg\n", Waiting_material_in_cooler);
+
         cooling_q.Insert(this);
         this->Passivate();
     }
 
-    if (Waiting_material_in_cooler >= 10) // cooler capacity?
+    if (Waiting_material_in_cooler >= COOLER_CAPACITY) // cooler capacity?
     {
         Seize(cooler);
-        Waiting_material_in_cooler -= 10; // cooler capacity?
+        Waiting_material_in_cooler -= COOLER_CAPACITY; // cooler capacity?
         Wait(COOLING_PERFORMANCE);
         Cooling_time(Time);
         Release(cooler);
 
-        Waiting_material_in_laminator += 10; // cooler capacity?
+        Waiting_material_in_laminator += COOLER_CAPACITY; // cooler capacity?
     }
     else
         Passivate();
@@ -171,72 +186,78 @@ void Lamination::Behavior()
 {
     if (laminator.Busy())
     {
+        printf("plny laminator %d kg\n", Waiting_material_in_laminator);
+
         laminating_q.Insert(this);
         this->Passivate();
     }
 
-    if (Waiting_material_in_laminator >= 30) // tu by mal byt laminator capacity asi
-    {
+    if (Waiting_material_in_laminator >= LAMINATOR_CAPACITY)
+    { // Kapacita laminátora
         Seize(laminator);
-        Waiting_material_in_laminator -= 30; // tu by mal byt laminator capacity asi
+        Waiting_material_in_laminator -= LAMINATOR_CAPACITY;
         Wait(LAMINATION_PERFORMANCE);
         Lamination_time(Time);
         Release(laminator);
 
-        if (Random() < 0.07) // vadna folia
-        {
-            int defective_material = 30 * 0.07; // Celkové množstvo vadného materiálu
-            int recycle_ratio = Random();       // Náhodné číslo medzi 0 a 1
+        // Rozhodovací bod pre vadnú fóliu
+        if (Random() < 0.25)
+        {                                                          // 25 % šanca na vadnú fóliu
+            double defective_material = LAMINATOR_CAPACITY * 0.07; // 7 % z materiálu je vadných
+            double recycle_ratio = Random();                       // Náhodné percento vadného materiálu, ktoré pôjde do recyklácie
 
             // Časť ide do recyklácie
-            int recycled_part = defective_material * recycle_ratio;
+            double recycled_part = defective_material * recycle_ratio;
             Recycled_material += recycled_part;
 
             // Zvyšok ide do odpadu
-            int waste_part = defective_material - recycled_part;
+            double waste_part = defective_material - recycled_part;
             Total_waste_material += waste_part;
+            (new Recycling)->Activate();
         }
         else
         {
-            Waiting_material_in_cutter += 30; // tu ma byt asi tiez laminator capacity
+            // Ak materiál nie je vadný, pokračuje do rezacieho stroja
+            Waiting_material_in_cutter += LAMINATOR_CAPACITY;
         }
-        ActivateQueue(laminating_q);
-        (new Recycling)->Activate();
 
-        (new Lamination)->Activate();
+        // Aktivácia ďalších procesov
+        ActivateQueue(laminating_q);
         (new Cutting)->Activate();
+        (new Lamination)->Activate();
     }
     else
     {
         Passivate();
     }
-    //("Aktivujem proces lamin\n");
 }
 
 void Cutting::Behavior()
 {
     if (cutter.Busy())
     {
+        printf("plny laminator %d kg\n", Waiting_material_in_cutter);
+
         cutting_q.Insert(this);
         this->Passivate();
     }
-    if (Waiting_material_in_cutter >= 20)
+    if (Waiting_material_in_cutter >= CUTTER_CAPACITY)
     {
         Seize(cutter);
-        Waiting_material_in_cutter -= 20;
-        Wait(10);
+        Waiting_material_in_cutter -= CUTTER_CAPACITY;
+        Wait(CUTTING_PERFORMANCE);
         Cutting_time(Time);
         Release(cutter);
         ActivateQueue(cutting_q);
-        if (Random() < 0.002)
-        { // 2 % pravdepodobnosť vzniku odpadu
-            Total_waste_material += 20 * 0.002;
-            Waiting_material_in_packer -= 20 * 0.002;
-        }
-        else
-        {
-            Waiting_material_in_packer += 20;
-        }
+        // if (Random() < 0.02)
+        // { // 2 % pravdepodobnosť vzniku odpadu
+        Total_waste_material += CUTTER_CAPACITY * 0.10; // 10% je zlych ide prec
+        Waiting_material_in_packer += CUTTER_CAPACITY * 0.10;
+        // }
+        // else
+        // {
+        //     Waiting_material_in_packer += 20;
+        // }
 
         ActivateQueue(cutting_q);
         (new Cutting)->Activate();
@@ -251,18 +272,19 @@ void Packing::Behavior() // treba dat queue ked je zabrata
 {
     if (packer.Busy())
     {
+        printf("plny packer %d kg\n", Waiting_material_in_packer);
+
         packing_q.Insert(this);
         this->Passivate();
     }
-    if (Waiting_material_in_packer >= 35)
+    if (Waiting_material_in_packer >= PACKER_CAPACITY)
     {
         Seize(packer);
-        Waiting_material_in_packer -= 35;
-        Wait(10);
+        Waiting_material_in_packer -= PACKER_CAPACITY;
+        Wait(PACKING_PERFORMANCE);
         Packing_time(Time);
         Release(packer);
-
-        Total_packed_products += 35;
+        Total_packed_products += PACKER_CAPACITY;
         ActivateQueue(packing_q);
         (new Packing)->Activate();
     }
@@ -270,13 +292,15 @@ void Packing::Behavior() // treba dat queue ked je zabrata
         Passivate();
     if (WorkShiftActive)
     {
-        (new Dispensing)->Activate();
+        if (Warehouse_material != 0)
+            (new Dispensing)->Activate();
     }
     //("Aktivujem proces packing\n");
 }
 
 void Recycling::Behavior()
 {
+    printf("je v recycling\n");
     if (recycler.Busy())
     {
         recycling_q.Insert(this);
@@ -287,6 +311,7 @@ void Recycling::Behavior()
         Waiting_material_in_extruder += Recycled_material;
         ActivateQueue(recycling_q);
         (new Extrusion)->Activate();
+        Total_recycled_materials += Recycled_material;
         Recycled_material = 0;
     }
     else
@@ -313,7 +338,7 @@ void Production::Behavior()
 // === Hlavní funkce ===
 int main()
 {
-    Init(0, DAY * 1); // Simulace na 5 dní
+    Init(0, DAY * 5); // Simulace na 5 dní
 
     // Spuštění procesů
     (new WorkShift)->Activate();
@@ -324,8 +349,8 @@ int main()
     // Výstup statistik
     //("\n=== Statistiky simulácie ===\n");
     dispensing_q.Output();
-    mixing_q.Output();
     mixer->Output();
+    mixing_q.Output();
     extruding_q.Output();
     cooling_q.Output();
     laminating_q.Output();
@@ -333,6 +358,6 @@ int main()
     packing_q.Output();
     recycling_q.Output();
 
-    //("\nCelkový počet zabalených produktov: %lu\n", Total_packed_products);
-    //("Celkové množstvo odpadu: %lu kg\n", Total_waste_material);
+    printf("Celkový počet zabalených produktov: %lu\n", Total_packed_products);
+    printf("Celkové množstvo odpadu: %lu kg\n", Total_waste_material);
 }
