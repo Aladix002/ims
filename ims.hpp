@@ -7,10 +7,18 @@
 
 // Kapacity a vykony v kg
 #define RAW_MATERIAL_STOCK_CAPACITY 50000 // Kapacita skladu surovin
-#define MIXER_CAPACITY 500                // Kapacita miesacky na jednu davku
-#define DISPENSER_CAPACITY 1000           // Kapacita davkovaca na jednu davku
-#define DISPENSER_PERFORMANCE 25
-#define MIXER_PERFORMANCE 30 // Cas potrebny na vydavkovanie (minuty)
+#define DISPENSER_CAPACITY 1000
+#define MIXER_CAPACITY 500 // Kapacita miesacky na jednu davku
+#define EXTRUDER_CAPACITY 100
+
+#define COOLER_CAPACITY 115
+#define LAMINATOR_CAPACITY 80
+#define CUTTER_CAPACITY 75
+#define PACKER_CAPACITY 60
+
+// Kapacita davkovaca na jednu davku
+#define DISPENSER_PERFORMANCE 30
+#define MIXER_PERFORMANCE 25 // Cas potrebny na vydavkovanie (minuty)
 #define EXTRUDER_PERFORMANCE 35
 #define COOLING_PERFORMANCE 20
 #define LAMINATION_PERFORMANCE 35
@@ -42,14 +50,14 @@ Store finished_products("Sklad hotovych vyrobkov", 2000); // Maximalny pocet bal
 Store faulty_products("Sklad vadnych vyrobkov", 500);     // Maximalna kapacita vadnych vyrobkov
 
 // Fronty
-Queue dispensing_q("Cakanie na suroviny");
-Queue mixing_q("Cakanie na miesacku");
-Queue extruding_q("Cakanie na extruder");
-Queue cooling_q("Cakanie na chladenie");
-Queue laminating_q("Cakanie na laminator");
-Queue cutting_q("Cakanie na rezanie");
-Queue packing_q("Cakanie na baliaci stroj");
-Queue recycling_q("Cakanie na recyklaciu");
+Queue dispensing_q("Rada na suroviny do davkovaca");
+Queue mixing_q("Rada na miešacku");
+Queue extruding_q("rada na extruder");
+Queue cooling_q("rada na chladenie");
+Queue laminating_q("rada na laminator");
+Queue cutting_q("rada na rezanie");
+Queue packing_q("rada na baliaci stroj");
+Queue recycling_q("rada na recyklaciu");
 
 // Statistiky
 Stat Dispensing_time("Cas straveny v davkovaci");
