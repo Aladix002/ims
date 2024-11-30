@@ -7,24 +7,23 @@
 
 // Kapacity a vykony v kg
 #define RAW_MATERIAL_STOCK_CAPACITY 100000 // Kapacita skladu surovin
-#define DISPENSER_CAPACITY 450
-#define MIXER_CAPACITY 500 // Kapacita miesacky na jednu davku
-#define EXTRUDER_CAPACITY 300
+#define DISPENSER_CAPACITY 1000            // Kapacita dávkovania
+#define MIXER_CAPACITY 500                 // Kapacita miešačky na jednu dávku
+#define EXTRUDER_CAPACITY 300              // Kapacita extrúdera na jednu dávku
+#define COOLER_CAPACITY 300                // Kapacita chladiča
+#define LAMINATOR_CAPACITY 280             // Kapacita laminátora
+#define CUTTER_CAPACITY 250                // Kapacita rezačky
+#define PACKER_CAPACITY 200                // Kapacita baliaceho stroja
 
-#define COOLER_CAPACITY 450
-#define LAMINATOR_CAPACITY 220
-#define CUTTER_CAPACITY 180
-#define PACKER_CAPACITY 100
+// Časy spracovania v minútach
+#define DISPENSER_PERFORMANCE 10           // Čas dávkovania
+#define MIXER_PERFORMANCE 30               // Čas miešania
+#define EXTRUDER_PERFORMANCE 20            // Čas extrúzie (na dávku 300 kg)
+#define COOLING_PERFORMANCE 20             // Čas chladenia
+#define LAMINATION_PERFORMANCE 25          // Čas laminácie
+#define CUTTING_PERFORMANCE 13             // Čas rezania
+#define PACKING_PERFORMANCE 10             // Čas balenia
 
-// Kapacita davkovaca na jednu davku
-#define DISPENSER_PERFORMANCE 30
-#define MIXER_PERFORMANCE 20 // Cas potrebny na vydavkovanie (minuty)
-#define EXTRUDER_PERFORMANCE 20
-#define COOLING_PERFORMANCE 20
-#define LAMINATION_PERFORMANCE 20
-#define CUTTING_PERFORMANCE 20
-#define PACKING_PERFORMANCE 20
-#define RECYCLE_CAPACITY 20
 
 // Pocet zariadeni
 #define NUMBER_OF_MIXERS 2
