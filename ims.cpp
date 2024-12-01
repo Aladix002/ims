@@ -29,7 +29,7 @@ void Dispensing::Behavior() {
         Warehouse_material -= DISPENSER_CAPACITY;
         Waiting_material_in_mixer += DISPENSER_CAPACITY;
         Seize(dispenser);
-        Wait(Uniform(DISPENSER_PERFORMANCE * 0.8, DISPENSER_PERFORMANCE * 1.2)); // 20% variácia
+        Wait(DISPENSER_PERFORMANCE);
         Dispensing_time(Time);
         Release(dispenser);
         ActivateQueue(dispensing_q);
@@ -64,7 +64,7 @@ void Mixing::Behavior() {
         double waste = MIXER_CAPACITY * 0.02; // 2% odpadu
         Total_waste_material += waste;
 
-        Wait(Uniform(MIXER_PERFORMANCE * 0.8, MIXER_PERFORMANCE * 1.2)); // 20% variácia
+        Wait(Uniform(MIXER_PERFORMANCE * 0.9, MIXER_PERFORMANCE * 1.1)); // 20% variácia
         Mixing_time(Time);
         Release(mixer[selected_mixer]);
 
@@ -88,7 +88,7 @@ void Extrusion::Behavior() {
         Seize(extruder);
         Waiting_material_in_extruder -= EXTRUDER_CAPACITY;
 
-        Wait(Uniform(EXTRUDER_PERFORMANCE * 0.8, EXTRUDER_PERFORMANCE * 1.2)); // 20% variácia
+        Wait(Uniform(EXTRUDER_PERFORMANCE * 0.85, EXTRUDER_PERFORMANCE * 1.15)); // 20% variácia
 
         if (Random() < 0.05) { // 5% šanca na chybnú viskozitu
             Total_waste_material += EXTRUDER_CAPACITY;
@@ -115,7 +115,7 @@ void Cooling::Behavior() {
         Seize(cooler);
         Waiting_material_in_cooler -= COOLER_CAPACITY;
 
-        Wait(Uniform(COOLING_PERFORMANCE * 0.8, COOLING_PERFORMANCE * 1.2)); // 20% variácia
+        Wait(Uniform(COOLING_PERFORMANCE * 0.9, COOLING_PERFORMANCE * 1.1)); // 20% variácia
         Cooling_time(Time);
         Release(cooler);
 
@@ -141,7 +141,7 @@ void Lamination::Behavior() {
         double waste = LAMINATOR_CAPACITY * 0.03; // 3% odpadu
         Total_waste_material += waste;
 
-        Wait(Uniform(LAMINATION_PERFORMANCE * 0.8, LAMINATION_PERFORMANCE * 1.2)); // 20% variácia
+        Wait(LAMINATION_PERFORMANCE);
         Lamination_time(Time);
         Release(laminator);
 
@@ -167,7 +167,7 @@ void Cutting::Behavior() {
         double waste = CUTTER_CAPACITY * (Random() * 0.03 + 0.02); // Rozsah 2% až 5%
         Total_waste_material += waste;
 
-        Wait(Uniform(CUTTING_PERFORMANCE * 0.8, CUTTING_PERFORMANCE * 1.2)); // 20% variácia
+        Wait(CUTTING_PERFORMANCE);
         Cutting_time(Time);
         Release(cutter);
 
