@@ -9,11 +9,8 @@ int Waiting_material_in_extruder = 0;
 int Waiting_material_in_cooler = 0;
 int Waiting_material_in_laminator = 0;
 int Waiting_material_in_cutter = 0;
-int Waiting_material_in_packer = 0;
-int Recycled_material = 0;             // Materiál vrátený do recyklácie
 unsigned long Total_waste_material = 0;  // Celkové množstvo odpadu (kg)
 unsigned long Total_packed_products = 0; // Celkový počet zabalených produktov
-unsigned long Total_recycled_materials = 0; // Celkové množstvo recyklovaných materiálov
 
 // === Procesy ===
 void ActivateQueue(Queue &q) {
@@ -32,14 +29,13 @@ void Dispensing::Behavior() {
         Warehouse_material -= DISPENSER_CAPACITY;
         Waiting_material_in_mixer += DISPENSER_CAPACITY;
         Seize(dispenser);
-        Wait(DISPENSER_PERFORMANCE);
+        Wait(Uniform(DISPENSER_PERFORMANCE * 0.8, DISPENSER_PERFORMANCE * 1.2)); // 20% variácia
         Dispensing_time(Time);
         Release(dispenser);
         ActivateQueue(dispensing_q);
         (new Dispensing)->Activate();
         (new Mixing)->Activate();
     } else {
-
         Passivate();
     }
 }
@@ -68,7 +64,7 @@ void Mixing::Behavior() {
         double waste = MIXER_CAPACITY * 0.02; // 2% odpadu
         Total_waste_material += waste;
 
-        Wait(MIXER_PERFORMANCE);
+        Wait(Uniform(MIXER_PERFORMANCE * 0.8, MIXER_PERFORMANCE * 1.2)); // 20% variácia
         Mixing_time(Time);
         Release(mixer[selected_mixer]);
 
@@ -92,7 +88,7 @@ void Extrusion::Behavior() {
         Seize(extruder);
         Waiting_material_in_extruder -= EXTRUDER_CAPACITY;
 
-        Wait(EXTRUDER_PERFORMANCE);
+        Wait(Uniform(EXTRUDER_PERFORMANCE * 0.8, EXTRUDER_PERFORMANCE * 1.2)); // 20% variácia
 
         if (Random() < 0.05) { // 5% šanca na chybnú viskozitu
             Total_waste_material += EXTRUDER_CAPACITY;
@@ -119,7 +115,7 @@ void Cooling::Behavior() {
         Seize(cooler);
         Waiting_material_in_cooler -= COOLER_CAPACITY;
 
-        Wait(COOLING_PERFORMANCE);
+        Wait(Uniform(COOLING_PERFORMANCE * 0.8, COOLING_PERFORMANCE * 1.2)); // 20% variácia
         Cooling_time(Time);
         Release(cooler);
 
@@ -145,7 +141,7 @@ void Lamination::Behavior() {
         double waste = LAMINATOR_CAPACITY * 0.03; // 3% odpadu
         Total_waste_material += waste;
 
-        Wait(LAMINATION_PERFORMANCE);
+        Wait(Uniform(LAMINATION_PERFORMANCE * 0.8, LAMINATION_PERFORMANCE * 1.2)); // 20% variácia
         Lamination_time(Time);
         Release(laminator);
 
@@ -171,17 +167,12 @@ void Cutting::Behavior() {
         double waste = CUTTER_CAPACITY * (Random() * 0.03 + 0.02); // Rozsah 2% až 5%
         Total_waste_material += waste;
 
-        Wait(CUTTING_PERFORMANCE); // Čas spracovania rezania
-        Cutting_time(Time);        // Zaznamenanie času stráveného rezaním
+        Wait(Uniform(CUTTING_PERFORMANCE * 0.8, CUTTING_PERFORMANCE * 1.2)); // 20% variácia
+        Cutting_time(Time);
         Release(cutter);
 
-        // Pridanie počtu zabalených produktov (znížený o odpad)
         Total_packed_products += CUTTER_CAPACITY - waste;
-
-        // Aktivácia ďalších procesov v rade
         ActivateQueue(cutting_q);
-
-        // Aktivácia nového procesu Cutting pre ďalšie spracovanie
         (new Cutting)->Activate();
     } else {
         Passivate();
@@ -212,4 +203,5 @@ int main() {
     printf("Celkové množstvo odpadu: %lu kg\n", Total_waste_material);
     return 0;
 }
+
 
