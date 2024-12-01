@@ -39,7 +39,7 @@ void Dispensing::Behavior() {
         (new Dispensing)->Activate();
         (new Mixing)->Activate();
     } else {
-        printf("Nie je dostatok materiálu na dávkovanie.\n");
+
         Passivate();
     }
 }
@@ -168,52 +168,28 @@ void Cutting::Behavior() {
         Seize(cutter);
         Waiting_material_in_cutter -= CUTTER_CAPACITY;
 
-        double waste = CUTTER_CAPACITY * 0.02; // 2% odpadu
+        double waste = CUTTER_CAPACITY * (Random() * 0.03 + 0.02); // Rozsah 2% až 5%
         Total_waste_material += waste;
 
-        Wait(CUTTING_PERFORMANCE);
-        Cutting_time(Time);
+        Wait(CUTTING_PERFORMANCE); // Čas spracovania rezania
+        Cutting_time(Time);        // Zaznamenanie času stráveného rezaním
         Release(cutter);
 
-        Waiting_material_in_packer += CUTTER_CAPACITY - waste;
+        // Pridanie počtu zabalených produktov (znížený o odpad)
+        Total_packed_products += CUTTER_CAPACITY - waste;
+
+        // Aktivácia ďalších procesov v rade
         ActivateQueue(cutting_q);
-        (new Packing)->Activate();
+
+        // Aktivácia nového procesu Cutting pre ďalšie spracovanie
         (new Cutting)->Activate();
     } else {
         Passivate();
     }
 }
 
-void Packing::Behavior() {
-    if (packer.Busy()) {
-        packing_q.Insert(this);
-        this->Passivate();
-    }
-
-    if (Waiting_material_in_packer >= PACKER_CAPACITY) {
-        Seize(packer);
-        Waiting_material_in_packer -= PACKER_CAPACITY;
-
-        Wait(PACKING_PERFORMANCE);
-        Packing_time(Time);
-        Release(packer);
-
-        Total_packed_products += PACKER_CAPACITY;
-        ActivateQueue(packing_q);
-        (new Packing)->Activate();
-    } else {
-        Passivate();
-    }
-}
-
-void WorkShift::Behavior() {
-    WorkShiftActive = true;
-    Wait(WORK_SHIFT);
-    WorkShiftActive = false;
-}
-
 void Production::Behavior() {
-    while (WorkShiftActive) {
+    while (true) {
         (new Dispensing)->Activate();
         Passivate();
     }
@@ -221,20 +197,16 @@ void Production::Behavior() {
 
 // === Hlavní funkce ===
 int main() {
-    Init(0, DAY * 5); // Simulácia na 5 dní
-
-    // Spustenie procesov
-    (new WorkShift)->Activate();
+    Init(0, DAY); // Simulacia na den
+    RandomSeed(time(nullptr));
     (new Production)->Activate();
 
     Run();
-
-    mixing_q.Output();
-    extruding_q.Output();
-    cooling_q.Output();
-    laminating_q.Output();
-    cutting_q.Output();
-    packing_q.Output();
+    
+    extruder.Output();
+    cooler.Output();
+    laminator.Output();
+    cutter.Output();
 
     printf("Celkový počet zabalených produktov: %lu kg\n", Total_packed_products);
     printf("Celkové množstvo odpadu: %lu kg\n", Total_waste_material);

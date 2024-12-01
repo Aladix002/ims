@@ -3,35 +3,31 @@
 // Casove jednotky v minutach
 #define HOUR 60
 #define DAY 1440
-#define WORK_SHIFT 720 // Pracovna doba 12 hodin
 
 // Kapacity a vykony v kg
-#define RAW_MATERIAL_STOCK_CAPACITY 100000 // Kapacita skladu surovin
-#define DISPENSER_CAPACITY 1000            // Kapacita dávkovania
-#define MIXER_CAPACITY 500                 // Kapacita miešačky na jednu dávku
-#define EXTRUDER_CAPACITY 300              // Kapacita extrúdera na jednu dávku
-#define COOLER_CAPACITY 300                // Kapacita chladiča
-#define LAMINATOR_CAPACITY 280             // Kapacita laminátora
-#define CUTTER_CAPACITY 250                // Kapacita rezačky
-#define PACKER_CAPACITY 200                // Kapacita baliaceho stroja
+#define RAW_MATERIAL_STOCK_CAPACITY 200000 // Kapacita skladu surovin
+#define DISPENSER_CAPACITY 1500            // Kapacita dávkovania
+#define MIXER_CAPACITY 1200                 // Kapacita miešačky na jednu dávku
+#define EXTRUDER_CAPACITY 800              // Kapacita extrúdera na jednu dávku
+#define COOLER_CAPACITY 1000                // Kapacita chladiča
+#define LAMINATOR_CAPACITY 900             // Kapacita laminátora
+#define CUTTER_CAPACITY 450                // Kapacita rezačky
 
 // Časy spracovania v minútach
 #define DISPENSER_PERFORMANCE 10           // Čas dávkovania
 #define MIXER_PERFORMANCE 30               // Čas miešania
-#define EXTRUDER_PERFORMANCE 20            // Čas extrúzie (na dávku 300 kg)
+#define EXTRUDER_PERFORMANCE 8            // Čas extrúzie 
 #define COOLING_PERFORMANCE 20             // Čas chladenia
 #define LAMINATION_PERFORMANCE 25          // Čas laminácie
 #define CUTTING_PERFORMANCE 13             // Čas rezania
-#define PACKING_PERFORMANCE 10             // Čas balenia
 
 
 // Pocet zariadeni
 #define NUMBER_OF_MIXERS 2
 #define NUMBER_OF_DISPENSERS 1
-#define NUMBER_OF_EXTRUDERS 1
+#define NUMBER_OF_EXTRUDERS 2
 #define NUMBER_OF_LAMINATORS 1
 #define NUMBER_OF_CUTTERS 1
-#define NUMBER_OF_PACKERS 1
 
 // Stroje (zariadenia)
 Facility dispenser("Davkovac");
@@ -40,7 +36,6 @@ Facility extruder("Extruder");
 Facility cooler("Chladic");
 Facility laminator("Laminator");
 Facility cutter("Rezaci stroj");
-Facility packer("Baliaci stroj");
 Facility recycler("Recyklacny stroj");
 
 // Sklady
@@ -55,7 +50,6 @@ Queue extruding_q("rada na extruder");
 Queue cooling_q("rada na chladenie");
 Queue laminating_q("rada na laminator");
 Queue cutting_q("rada na rezanie");
-Queue packing_q("rada na baliaci stroj");
 Queue recycling_q("rada na recyklaciu");
 
 // Statistiky
@@ -65,11 +59,8 @@ Stat Extrusion_time("Cas straveny v extruderi");
 Stat Cooling_time("Cas straveny chladenim");
 Stat Lamination_time("Cas straveny laminaciou");
 Stat Cutting_time("Cas straveny rezanim");
-Stat Packing_time("Cas straveny balenim");
 Stat Recycling_time("Cas straveny recyklaciou");
 
-// Stavy
-bool WorkShiftActive = true;
 
 // Procesy
 class Production : public Process
@@ -114,23 +105,12 @@ public:
     void Behavior() override;
 };
 
-class Packing : public Process
-{
-public:
-    void Behavior() override;
-};
-
 class Recycling : public Process
 {
 public:
     void Behavior() override;
 };
 
-class WorkShift : public Process
-{
-public:
-    void Behavior() override;
-};
 
 class StartProduction : public Event
 {
