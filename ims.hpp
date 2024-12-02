@@ -5,9 +5,9 @@
 #define DAY 1440
 
 // Kapacity a vykony v kg
-#define RAW_MATERIAL_STOCK_CAPACITY 200000 // Kapacita skladu surovin
+#define RAW_MATERIAL_STOCK_CAPACITY 500000 // Kapacita skladu surovin
 #define DISPENSER_CAPACITY 1500            // Kapacita dávkovania
-#define MIXER_CAPACITY 1200                 // Kapacita miešačky na jednu dávku
+#define MIXER_CAPACITY 1000                 // Kapacita miešačky na jednu dávku
 #define EXTRUDER_CAPACITY 800              // Kapacita extrúdera na jednu dávku
 #define COOLER_CAPACITY 1000                // Kapacita chladiča
 #define LAMINATOR_CAPACITY 900             // Kapacita laminátora

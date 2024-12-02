@@ -184,7 +184,7 @@ void Cutting::Behavior() {
         Seize(cutter);
         Waiting_material_in_cutter -= CUTTER_CAPACITY;
 
-        double waste = CUTTER_CAPACITY * (Random() * 0.03 + 0.02); // Rozsah 2% až 5%
+        double waste = CUTTER_CAPACITY * (Random() * 0.02 + 0.01); // Rozsah 1% až 3%
         Total_waste_material += waste;
 
         Wait(CUTTING_PERFORMANCE); // Čas spracovania rezania
@@ -218,14 +218,16 @@ int main() {
     (new Production)->Activate();
 
     Run();
-
+    dispenser.Output();
+    mixer[0].Output();
+    mixer[1].Output();
     extruder.Output();
     cooler.Output();
     laminator.Output();
     cutter.Output();
 
-    printf("Celkový počet zabalených produktov: %lu kg\n", Total_packed_products);
-    printf("Celkové množstvo odpadu: %lu kg\n", Total_waste_material);
+    printf("Celkový počet zabalených produktov: %lu kg\n",Total_packed_products + Total_recycled_materials);
+    printf("Celkové množstvo odpadu: %lu kg\n", Total_waste_material - Total_recycled_materials);
     printf("Celkové množstvo recyklovaných materiálov: %lu kg\n", Total_recycled_materials);
     return 0;
 }
