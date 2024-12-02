@@ -64,19 +64,13 @@ void Mixing::Behavior() {
         Seize(mixer[selected_mixer]);
         Waiting_material_in_mixer -= MIXER_CAPACITY;
 
-        double waste = MIXER_CAPACITY * (Random() * 0.03 + 0.02); // 2% až 5% odpadu
-        if (RecycleNextCycle) {
-            Recycled_material += waste;
-            Total_recycled_materials += waste;
-        } else {
-            Total_waste_material += waste;
-        }
+
 
         Wait(Uniform(MIXER_PERFORMANCE * 0.95, MIXER_PERFORMANCE * 1.05));
         Mixing_time(Time);
         Release(mixer[selected_mixer]);
 
-        Waiting_material_in_extruder += MIXER_CAPACITY - waste;
+        Waiting_material_in_extruder += MIXER_CAPACITY;
         ActivateQueue(mixing_q);
         (new Extrusion)->Activate();
         (new Mixing)->Activate();
@@ -107,7 +101,16 @@ void Extrusion::Behavior() {
         Wait(Uniform(EXTRUDER_PERFORMANCE * 0.9, EXTRUDER_PERFORMANCE * 1.1));
 
         if (Random() < 0.05) { // 5% šanca na chybnú viskozitu
-            Total_waste_material += EXTRUDER_CAPACITY;
+            double waste = EXTRUDER_CAPACITY;
+            if (RecycleNextCycle) {
+                double recyclable = waste;
+                Recycled_material += recyclable;
+                Total_recycled_materials += recyclable;
+                Total_waste_material += waste - recyclable;
+            } else {
+                Total_waste_material += waste;
+            }
+            RecycleNextCycle = !RecycleNextCycle;
         } else {
             Waiting_material_in_cooler += EXTRUDER_CAPACITY;
             (new Cooling)->Activate();
@@ -116,10 +119,7 @@ void Extrusion::Behavior() {
         Release(extruder);
         ActivateQueue(extruding_q);
         (new Extrusion)->Activate();
-        RecycleNextCycle = !RecycleNextCycle; // Prepínač recyklácie
-        if (RecycleNextCycle) {
-            (new Recycling)->Activate();
-        }
+        (new Recycling)->Activate();
     } else {
         Passivate();
     }
@@ -159,7 +159,15 @@ void Lamination::Behavior() {
         Waiting_material_in_laminator -= LAMINATOR_CAPACITY;
 
         double waste = LAMINATOR_CAPACITY * 0.03; // 3% odpadu
-        Total_waste_material += waste;
+        if (RecycleNextCycle) {
+            double recyclable = waste * 0.7;
+            Recycled_material += recyclable;
+            Total_recycled_materials += recyclable;
+            Total_waste_material += waste - recyclable;
+        } else {
+            Total_waste_material += waste;
+        }
+        RecycleNextCycle = !RecycleNextCycle;
 
         Wait(LAMINATION_PERFORMANCE);
         Lamination_time(Time);
@@ -184,20 +192,23 @@ void Cutting::Behavior() {
         Seize(cutter);
         Waiting_material_in_cutter -= CUTTER_CAPACITY;
 
-        double waste = CUTTER_CAPACITY * (Random() * 0.02 + 0.01); // Rozsah 1% až 3%
-        Total_waste_material += waste;
+        double waste = CUTTER_CAPACITY * (Random() * 0.03 + 0.02);
+        if (RecycleNextCycle) {
+            double recyclable = waste * 0.7;
+            Recycled_material += recyclable;
+            Total_recycled_materials += recyclable;
+            Total_waste_material += waste - recyclable;
+        } else {
+            Total_waste_material += waste;
+        }
+        RecycleNextCycle = !RecycleNextCycle;
 
-        Wait(CUTTING_PERFORMANCE); // Čas spracovania rezania
-        Cutting_time(Time);        // Zaznamenanie času stráveného rezaním
+        Wait(CUTTING_PERFORMANCE);
+        Cutting_time(Time);
         Release(cutter);
 
-        // Pridanie počtu zabalených produktov (znížený o odpad)
         Total_packed_products += CUTTER_CAPACITY - waste;
-
-        // Aktivácia ďalších procesov v rade
         ActivateQueue(cutting_q);
-
-        // Aktivácia nového procesu Cutting pre ďalšie spracovanie
         (new Cutting)->Activate();
     } else {
         Passivate();
@@ -211,26 +222,21 @@ void Production::Behavior() {
     }
 }
 
-// === Hlavní funkce ===
+// === Hlavná funkcia ===
 int main() {
-    Init(0, DAY); // Simulacia na den
+    Init(0, DAY); // Simulácia na deň
     RandomSeed(time(nullptr));
     (new Production)->Activate();
 
     Run();
-    dispenser.Output();
-    mixer[0].Output();
-    mixer[1].Output();
-    extruder.Output();
-    cooler.Output();
-    laminator.Output();
-    cutter.Output();
 
-    printf("Celkový počet zabalených produktov: %lu kg\n",Total_packed_products + Total_recycled_materials);
-    printf("Celkové množstvo odpadu: %lu kg\n", Total_waste_material - Total_recycled_materials);
+    printf("Celkový počet zabalených produktov: %lu kg\n", Total_packed_products + Total_recycled_materials);
+    printf("Celkové množstvo odpadu: %lu kg\n", Total_waste_material);
     printf("Celkové množstvo recyklovaných materiálov: %lu kg\n", Total_recycled_materials);
     return 0;
 }
+
+
 
 
 
