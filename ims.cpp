@@ -105,7 +105,7 @@ void Extrusion::Behavior() {
         Seize(extruder);
         Waiting_material_in_extruder -= EXTRUDER_CAPACITY;
 
-        Wait(Uniform(EXTRUDER_PERFORMANCE * 0.9, EXTRUDER_PERFORMANCE * 1.1)); // Variacia casu
+        Wait(EXTRUDER_PERFORMANCE); // Variacia casu
 
         if (Random() < 0.03) { // 3% sanca na chybu
             double waste = EXTRUDER_CAPACITY;
@@ -167,7 +167,7 @@ void Lamination::Behavior() {
         Seize(laminator);
         Waiting_material_in_laminator -= LAMINATOR_CAPACITY;
 
-        double waste = LAMINATOR_CAPACITY * 0.03; // 3% odpadu
+        double waste = LAMINATOR_CAPACITY * 0.04; // 3% odpadu
         if (RecycleNextCycle) {
             double recyclable = waste * 0.7; // 70% recyklovatelne
             Recycled_material += recyclable;
