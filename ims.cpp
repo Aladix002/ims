@@ -167,7 +167,7 @@ void Lamination::Behavior() {
         Seize(laminator);
         Waiting_material_in_laminator -= LAMINATOR_CAPACITY;
 
-        double waste = LAMINATOR_CAPACITY * 0.04; // 3% odpadu
+        double waste = LAMINATOR_CAPACITY * 0.0; // 3% odpadu
         if (RecycleNextCycle) {
             double recyclable = waste * 0.7; // 70% recyklovatelne
             Recycled_material += recyclable;

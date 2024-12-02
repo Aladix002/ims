@@ -51,6 +51,14 @@ Queue laminating_q("Rada na laminator");             // Fronta na laminator
 Queue cutting_q("Rada na rezanie");                  // Fronta na rezacku
 Queue recycling_q("Rada na recyklaciu");             // Fronta na recyklaciu
 
+// Statistiky
+Stat Dispensing_time("Cas straveny v davkovaci");    // Cas straveny davkovanim
+Stat Mixing_time("Cas straveny v miesacke");         // Cas straveny miesanim
+Stat Extrusion_time("Cas straveny v extruderi");     // Cas straveny extrudovanim
+Stat Cooling_time("Cas straveny chladenim");         // Cas straveny chladenim
+Stat Lamination_time("Cas straveny laminaciou");     // Cas straveny laminovanim
+Stat Cutting_time("Cas straveny rezanim");           // Cas straveny rezanim
+Stat Recycling_time("Cas straveny recyklaciou");     // Cas straveny recyklaciou
 
 // Procesy
 class Production : public Process
