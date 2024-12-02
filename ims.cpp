@@ -1,6 +1,6 @@
 //Projekt do IMS - Vyroba PVC folii
 // Filip Botlo - xbotlo01
-// Katarína Kozáková - xkozak20
+// Katarína Kozáková - xkozak209 - 11
 
 #include <simlib.h>
 #include <cstdio>
@@ -71,7 +71,7 @@ void Mixing::Behavior() {
         Seize(mixer[selected_mixer]);
         Waiting_material_in_mixer -= MIXER_CAPACITY;
 
-        Wait(Uniform(MIXER_PERFORMANCE * 0.95, MIXER_PERFORMANCE * 1.05)); // Variacia casu
+        Wait(Uniform(MIXER_PERFORMANCE * 0.9, MIXER_PERFORMANCE * 1.1)); // Variacia casu
         Mixing_time(Time);
         Release(mixer[selected_mixer]);
 
