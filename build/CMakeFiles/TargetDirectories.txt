@@ -1,3 +1,0 @@
-/home/aladix/Desktop/FIT/3BIT/ims/build/CMakeFiles/simulation.dir
-/home/aladix/Desktop/FIT/3BIT/ims/build/CMakeFiles/edit_cache.dir
-/home/aladix/Desktop/FIT/3BIT/ims/build/CMakeFiles/rebuild_cache.dir
