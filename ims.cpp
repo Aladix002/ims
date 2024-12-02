@@ -100,7 +100,7 @@ void Extrusion::Behavior() {
 
         Wait(Uniform(EXTRUDER_PERFORMANCE * 0.9, EXTRUDER_PERFORMANCE * 1.1));
 
-        if (Random() < 0.05) { // 5% šanca na chybnú viskozitu
+        if (Random() < 0.03) { // 5% šanca na chybnú viskozitu
             double waste = EXTRUDER_CAPACITY;
             if (RecycleNextCycle) {
                 double recyclable = waste;
