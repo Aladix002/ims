@@ -1,1 +1,0 @@
-/usr/bin/c++  -Wall -Wextra -Werror -pedantic CMakeFiles/simulation.dir/ims.cpp.o -o simulation   -L/usr/local/lib  -Wl,-rpath,/usr/local/lib -lsimlib 
